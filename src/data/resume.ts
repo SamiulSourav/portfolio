@@ -225,10 +225,34 @@ export const contests: ContestResult[] = [
   { year: 2012, contest: 'Rangpur Math Olympiad', result: '2nd runner-up' },
 ]
 
-export const education = {
-  degree: 'B.Sc. in Computer Science & Engineering',
-  school: 'Begum Rokeya University, Rangpur',
-  start: '2016',
-  end: '2022',
-  grade: 'CGPA 3.27',
+export interface Education {
+  degree: string
+  school: string
+  /** Omit for single-year qualifications such as SSC/HSC; only `end` is shown then. */
+  start?: string
+  end: string
+  grade: string
 }
+
+// Newest first.
+export const education: Education[] = [
+  {
+    degree: 'B.Sc. in Computer Science & Engineering',
+    school: 'Begum Rokeya University, Rangpur',
+    start: '2016',
+    end: '2022',
+    grade: 'CGPA 3.27',
+  },
+  {
+    degree: 'Higher Secondary Certificate',
+    school: 'Carmichael College, Rangpur',
+    end: '2015',
+    grade: 'GPA 4.67',
+  },
+  {
+    degree: 'Secondary School Certificate',
+    school: 'Collectorate School and College, Rangpur',
+    end: '2013',
+    grade: 'GPA 5.00',
+  },
+]
