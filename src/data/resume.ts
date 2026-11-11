@@ -77,13 +77,19 @@ export const profile = {
 
 export const contact = {
   email: 'samiul.ss9@gmail.com',
-  phone: '+880 1521 302574',
-  phoneHref: 'tel:+8801521302574',
+  // Each number is shown on its own line with its own tap-to-call link.
+  phones: [
+    { label: '+880 1521 302574', href: 'tel:+8801521302574' },
+    { label: '+880 1724 840434', href: 'tel:+8801724840434' },
+  ],
   github: { label: 'github.com/SamiulSourav', url: 'https://github.com/SamiulSourav' },
   linkedin: {
     label: 'linkedin.com/in/md-samiul-haque',
     url: 'https://linkedin.com/in/md-samiul-haque',
   },
+  // wa.me needs the full international number without "+" or the local leading 0.
+  whatsapp: { label: '+880 1521 302574', url: 'https://wa.me/8801521302574' },
+  facebook: { label: 'facebook.com/souravsamiul', url: 'https://facebook.com/souravsamiul' },
   resumeUrl: `${import.meta.env.BASE_URL}Md-Samiul-Haque-Resume.pdf`,
 }
 

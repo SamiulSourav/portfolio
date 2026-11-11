@@ -1,7 +1,55 @@
 <script setup lang="ts">
 import AppIcon from './AppIcon.vue'
 import SectionHeading from './SectionHeading.vue'
+import type { IconName } from './icons'
 import { contact, profile } from '@/data/resume'
+
+interface ChannelItem {
+  value: string
+  href?: string
+}
+
+interface Channel {
+  icon: IconName
+  label: string
+  /** One line per item, e.g. several phone numbers. */
+  items: ChannelItem[]
+  /** Opens in a new tab (everything except tel: links). */
+  external?: boolean
+}
+
+const channels: Channel[] = [
+  {
+    icon: 'phone',
+    label: 'Phone',
+    items: contact.phones.map((phone) => ({ value: phone.label, href: phone.href })),
+  },
+  {
+    icon: 'whatsapp',
+    label: 'WhatsApp',
+    items: [{ value: contact.whatsapp.label, href: contact.whatsapp.url }],
+    external: true,
+  },
+  {
+    icon: 'github',
+    label: 'GitHub',
+    items: [{ value: contact.github.label, href: contact.github.url }],
+    external: true,
+  },
+  {
+    icon: 'linkedin',
+    label: 'LinkedIn',
+    items: [{ value: contact.linkedin.label, href: contact.linkedin.url }],
+    external: true,
+  },
+  {
+    icon: 'facebook',
+    label: 'Facebook',
+    items: [{ value: contact.facebook.label, href: contact.facebook.url }],
+    external: true,
+  },
+  { icon: 'map-pin', label: 'Based in', items: [{ value: profile.location }] },
+]
 </script>
 
 <template>
@@ -24,29 +72,27 @@ import { contact, profile } from '@/data/resume'
       </div>
 
       <ul class="channels">
-        <li class="channel">
-          <AppIcon name="phone" :size="18" class="channel__icon" />
-          <span class="channel__label">Phone</span>
-          <a :href="contact.phoneHref" class="channel__value">{{ contact.phone }}</a>
-        </li>
-        <li class="channel">
-          <AppIcon name="github" :size="18" class="channel__icon" />
-          <span class="channel__label">GitHub</span>
-          <a :href="contact.github.url" class="channel__value" target="_blank" rel="noopener">
-            {{ contact.github.label }}<span class="visually-hidden"> (opens in a new tab)</span>
-          </a>
-        </li>
-        <li class="channel">
-          <AppIcon name="linkedin" :size="18" class="channel__icon" />
-          <span class="channel__label">LinkedIn</span>
-          <a :href="contact.linkedin.url" class="channel__value" target="_blank" rel="noopener">
-            {{ contact.linkedin.label }}<span class="visually-hidden"> (opens in a new tab)</span>
-          </a>
-        </li>
-        <li class="channel">
-          <AppIcon name="map-pin" :size="18" class="channel__icon" />
-          <span class="channel__label">Based in</span>
-          <span class="channel__value">{{ profile.location }}</span>
+        <li v-for="channel in channels" :key="channel.label" class="channel">
+          <AppIcon :name="channel.icon" :size="18" class="channel__icon" />
+          <span class="channel__label">{{ channel.label }}</span>
+          <span class="channel__values">
+            <template v-for="item in channel.items" :key="item.value">
+              <a
+                v-if="item.href"
+                :href="item.href"
+                class="channel__value"
+                :target="channel.external ? '_blank' : undefined"
+                :rel="channel.external ? 'noopener' : undefined"
+              >
+                {{ item.value }}
+                <!-- Phone and WhatsApp show the same number, so name the service for screen readers. -->
+                <span v-if="channel.external" class="visually-hidden">
+                  ({{ channel.label }}, opens in a new tab)
+                </span>
+              </a>
+              <span v-else class="channel__value">{{ item.value }}</span>
+            </template>
+          </span>
         </li>
       </ul>
     </div>
@@ -98,16 +144,21 @@ import { contact, profile } from '@/data/resume'
   border-top: 1px solid var(--border);
 }
 
+/* Rows align to the first line, so multi-line rows (two phone numbers) keep the
+   icon and label beside the top value. --line is one line of body text. */
 .channel {
+  --line: calc(1.0625rem * 1.6);
+
   display: grid;
   grid-template-columns: 18px 84px minmax(0, 1fr);
-  align-items: center;
+  align-items: start;
   gap: 14px;
   padding: 16px 0;
   border-bottom: 1px solid var(--border);
 }
 
 .channel__icon {
+  margin-top: calc((var(--line) - 18px) / 2);
   color: var(--text-subtle);
 }
 
@@ -115,8 +166,17 @@ import { contact, profile } from '@/data/resume'
   color: var(--text-subtle);
   font-family: var(--font-mono);
   font-size: 0.75rem;
+  line-height: var(--line);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.channel__values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
 }
 
 .channel__value {
